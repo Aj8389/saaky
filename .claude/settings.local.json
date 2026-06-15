@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(timeout 8 node server.js)",
+      "WebFetch(domain:developers.deriv.com)",
+      "Bash(timeout 10 node server.js)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 2; 'killed'\")"
+    ]
+  }
+}

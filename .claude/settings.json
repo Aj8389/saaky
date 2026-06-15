@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 1; 'ok'\")",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep -Seconds 1\")",
+      "Bash(timeout 12 node server.js)",
+      "WebSearch",
+      "WebFetch(domain:api.deriv.com)",
+      "WebFetch(domain:legacy-api.deriv.com)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

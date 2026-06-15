@@ -1,0 +1,26 @@
+
+.no-sell-lbl {
+  width: 100%;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 9px;
+  color: #3a4560;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.exit-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 0;
+  background: rgba(255, 51, 85, 0.12);
+  border: 1px solid rgba(255, 51, 85, 0.4);
+  color: #ff3355;
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+  &:hover { background: rgba(255, 51, 85, 0.25); }
+}

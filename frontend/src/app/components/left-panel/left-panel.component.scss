@@ -1,0 +1,34 @@
+.tok-error {
+  margin-top: 8px;
+  color: #e74c3c;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.acct-toggle {
+  display: flex;
+  gap: 6px;
+  .atbtn {
+    flex: 1;
+    padding: 6px 0;
+    border: 1px solid #444;
+    background: #1a1a2e;
+    color: #aaa;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    &.active {
+      background: #2d2d4e;
+      color: #ccc;
+      border-color: #666;
+    }
+    &.real.active {
+      background: #1a3a1a;
+      color: #4caf50;
+      border-color: #4caf50;
+    }
+  }
+}
+
