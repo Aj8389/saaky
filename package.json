@@ -4,7 +4,8 @@
   "description": "DerivBot Pro — Backend WebSocket Server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "cd frontend && npm install && npm run build"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
