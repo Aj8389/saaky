@@ -330,36 +330,57 @@ function analyzeSignal() {
   let strength = 0;
 
   if (state.strategy === "SMART") {
-    // Score 4 independent signals; fire when majority agree
+    // ── Volatility gate — skip flat/choppy markets ──────────────────────
+    const slice20 = prices.slice(-20);
+    const mean20 = slice20.reduce((a, b) => a + b, 0) / 20;
+    const std20 = Math.sqrt(slice20.reduce((s, p) => s + Math.pow(p - mean20, 2), 0) / 20);
+    const cvPct = (std20 / mean20) * 100;
+    if (cvPct < 0.03) {
+      return {
+        signal: "WAIT",
+        reason: `Market too flat — CV: ${cvPct.toFixed(4)}%`,
+        rsi,
+        ema9: parseFloat(ema9.toFixed(4)),
+        ema21: parseFloat(ema21.toFixed(4)),
+        strength: 0,
+        macd,
+      };
+    }
+
+    // ── Score 4 independent signals ─────────────────────────────────────
     const recent = prices.slice(-6);
     const upTicks = recent.filter((p, i) => i > 0 && p > recent[i - 1]).length;
     const downTicks = (recent.length - 1) - upTicks;
 
+    // Tightened thresholds vs original (45 → 38, 55 → 62, >=3 → >=4)
     const emaBull  = ema9 > ema21;
-    const rsiBull  = rsi < 45;   // meaningful oversold lean, not just below 50
-    const momBull  = upTicks >= 3;
+    const rsiBull  = rsi < 38;    // was 45 — meaningful oversold only
+    const momBull  = upTicks >= 4; // was 3 — require clear directional momentum
     const macdBull = macd >= 0;
 
     const emaBear  = !emaBull;
-    const rsiBear  = rsi > 55;   // meaningful overbought lean, not just above 50
-    const momBear  = downTicks >= 3;
+    const rsiBear  = rsi > 62;    // was 55 — meaningful overbought only
+    const momBear  = downTicks >= 4; // was 3
     const macdBear = macd < 0;
 
     const bullScore = (emaBull ? 1 : 0) + (rsiBull ? 1 : 0) + (momBull ? 1 : 0) + (macdBull ? 1 : 0);
     const bearScore = (emaBear ? 1 : 0) + (rsiBear ? 1 : 0) + (momBear ? 1 : 0) + (macdBear ? 1 : 0);
 
-    if (bullScore >= 3 && bullScore > bearScore && rsi < 65) {
+    // EMA + MACD must both agree — they are the primary trend-following filters
+    // Also require at least 3-of-4 total and clear lead over the opposite score
+    if (bullScore >= 3 && emaBull && macdBull && bullScore > bearScore && rsi < 55) {
       signal = "BUY";
       reason = `SMART BUY ${bullScore}/4: EMA${emaBull?"↑":"↓"} RSI${rsi} Mom${upTicks}/5 MACD${macdBull?"↑":"↓"}`;
       strength = 50 + bullScore * 12;
-    } else if (bearScore >= 3 && bearScore > bullScore && rsi > 35) {
+    } else if (bearScore >= 3 && emaBear && macdBear && bearScore > bullScore && rsi > 45) {
       signal = "SELL";
       reason = `SMART SELL ${bearScore}/4: EMA${emaBear?"↓":"↑"} RSI${rsi} Mom${downTicks}/5 MACD${macdBear?"↓":"↑"}`;
       strength = 50 + bearScore * 12;
     } else {
-      reason = `SMART: Weak/risky signal (Bull:${bullScore} Bear:${bearScore} RSI:${rsi})`;
+      reason = `SMART: Filtered (Bull:${bullScore} Bear:${bearScore} RSI:${rsi} CV:${cvPct.toFixed(3)}%)`;
       strength = 20;
     }
+
   } else if (state.strategy === "RSI_EMA") {
     if (rsi < 40 && ema9 > ema21) {
       signal = "BUY";
@@ -884,7 +905,8 @@ function runBotLogic() {
   broadcast({ type: "SIGNAL_UPDATE", analysis });
   state.lastSignalTime = now;
 
-  if (analysis.signal === "WAIT" || analysis.strength < 62) return;
+  // Raised from 62 → 74 to match tightened scoring
+  if (analysis.signal === "WAIT" || analysis.strength < 74) return;
 
   // Determine contract type
   let contractType = state.contractType;
