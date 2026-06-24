@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  wsUrl: 'wss://omkar-l5r9.onrender.com',
-  apiUrl: 'https://omkar-l5r9.onrender.com',
+  wsUrl: 'wss://saaky.onrender.com',
+  apiUrl: 'https://saaky.onrender.com',
 };
+// https://saaky.onrender.com
